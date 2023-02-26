@@ -1,37 +1,37 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, Button, View } from 'react-native';
+
+
 import { FaceLandmarksDetector, faceLandmarksDetection } from '@tensorflow-models/face-landmarks-detection';
-import { NavigationContainer, NavigationContext, NavigationHelpersContext } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-
-import CameraScreen from './components/camera';
-import ResultScreen from './components/tensorflow';
-
-const Stack = createStackNavigator();  
-
+import VideoRecorder from 'react-native-beautiful-video-recorder';
+ 
 export default function App() {
+  const cameraRef = useRef(null);
+  const videoRecord = async () => {
+    if( cameraRef && cameraRef.current ) {
+      cameraRef.current.open({ maxLength: 30 },(data) => {
+        console.log('captured data', data); // data.uri is the file path
+      });
+    }
+  }
+  const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
+  const detectorConfig = {
+    runtime: 'mediapipe', // or 'tfjs'
+    solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh',
+  }
+
+  const detector =  faceLandmarksDetection.createDetector(model, detectorConfig);
+  const faces =  detector.estimateFaces(image);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="camera"
-          component={CameraScreen}
-        />
-        <Stack.Screen
-          name="result"
-          component={ResultScreen}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View>
+        <VideoRecorder ref={cameraRef} />
+          <Button onPress={ () => videoRecord() }>Open Recorder</Button>
+        <Button onPress={ () => videoRecord() } title="Open Recorder" />
+
+        <Text>{faces}</Text>
+      </View>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
