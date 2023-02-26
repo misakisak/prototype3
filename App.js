@@ -1,12 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { FaceLandmarksDetector, faceLandmarksDetection } from '@tensorflow-models/face-landmarks-detection';
+import { NavigationContainer, NavigationContext, NavigationHelpersContext } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+import CameraScreen from './components/camera';
+import ResultScreen from './components/tensorflow';
+
+const Stack = createStackNavigator();  
 
 export default function App() {
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="camera"
+          component={CameraScreen}
+        />
+        <Stack.Screen
+          name="result"
+          component={ResultScreen}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
